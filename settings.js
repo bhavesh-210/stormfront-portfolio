@@ -6,5 +6,5 @@ export function sanitizeSettings(value) {
   for (const k of ['sound', 'reduced']) if (typeof value[k] === 'boolean') s[k] = value[k];
   return s;
 }
-export function loadSettings(storage = globalThis.localStorage) { try { return sanitizeSettings(JSON.parse(storage.getItem('stormfront-settings'))); } catch { return { ...defaults }; } }
-export function saveSettings(value, storage = globalThis.localStorage) { try { storage.setItem('stormfront-settings', JSON.stringify(sanitizeSettings(value))); return true; } catch { return false; } }
+export function loadSettings(storage) { try { return sanitizeSettings(JSON.parse((storage ?? globalThis.localStorage).getItem('stormfront-settings'))); } catch { return { ...defaults }; } }
+export function saveSettings(value, storage) { try { (storage ?? globalThis.localStorage).setItem('stormfront-settings', JSON.stringify(sanitizeSettings(value))); return true; } catch { return false; } }

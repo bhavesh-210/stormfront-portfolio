@@ -18,7 +18,7 @@ export class Inspector {
     canvas.onkeydown=e=>{if(['ArrowLeft','ArrowRight','+','-','='].includes(e.key)){e.preventDefault();if(e.key==='ArrowLeft')this.yaw-=.15;else if(e.key==='ArrowRight')this.yaw+=.15;else this.zoom=T.MathUtils.clamp(this.zoom+(e.key==='-'?.1:-.1),.65,1.4);this.render()}};
     this.onResize();
   }
-  setModel(kind,finish){if(this.model){this.pivot.remove(this.model);disposeModel(this.model)}this.kind=kind;this.model=kind==='operator'?operatorModel(finish):gearModel(kind,finish);this.pivot.add(this.model);if(kind!=='operator')this.model.position.y=.8;this.render()}
+  setModel(kind,finish){if(this.model){this.pivot.remove(this.model);disposeModel(this.model)}this.kind=kind;const label=this.host.querySelector('.inspection-label');if(label)label.textContent='ORIGINAL 3D / '+kind.toUpperCase();this.model=kind==='operator'?operatorModel(finish):gearModel(kind,finish);this.pivot.add(this.model);if(kind!=='operator')this.model.position.y=.8;this.render()}
   rotate(delta){this.yaw+=delta;this.render()}
   reset(){this.yaw=.5;this.pitch=0;this.zoom=1;this.render()}
   render(){if(this.dead)return;this.pivot.rotation.set(this.pitch,this.yaw,0);this.camera.position.set(0,this.kind==='operator'?1.25:1.05,(this.kind==='operator'?3.9:2.9)*this.zoom);this.camera.lookAt(0,this.kind==='operator'?.95:.8,0);this.renderer.render(this.scene,this.camera)}
