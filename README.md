@@ -1,10 +1,14 @@
 # Stormfront Portfolio
 
-An original military-themed, playable portfolio for **Bhavesh Sharma**. The portfolio can be browsed directly, or explored through a single-player airfield mission.
+Bhavesh Sharma's original military-inspired portfolio, with a playable parachute insertion, a 3D equipment gallery and an optional single-player airfield mission. Every portfolio section is accessible without playing.
 
-## Run
+Hosted owner preview: https://bhavesh-stormfront-portfolio.scenicboat64.chatgpt.site
 
-Requires Node.js 20 or later. No dependency installation or build step is needed.
+The hosted preview currently has private owner access. The source repository and static build can be used for public hosting.
+
+## Run locally
+
+Requires **Node.js 20+**. No package installation is necessary; Three.js r160 is bundled with its MIT license.
 
 ```sh
 git clone https://github.com/bhavesh-210/stormfront-portfolio.git
@@ -12,65 +16,79 @@ cd stormfront-portfolio
 npm run dev
 ```
 
-Open http://127.0.0.1:5187. Set `PORT` to change the port. Serve the repository root with any static HTTP server for hosting. ES modules need HTTP; opening index.html as a file will not work.
+Open **http://127.0.0.1:5187**. To use another port: `PORT=5190 npm run dev`.
 
-## Experience
-
-- Cinematic lobby with original generated operator artwork.
-- Operator, projects, interests/loadout, navigation map, community contribution and social contact pages.
-- Aircraft approach, jump, freefall, parachute deployment and landing.
-- First-person movement, sprint, jump, aiming, firing, reload and recoil.
-- Six patrolling enemy drones, health, cover and line-of-sight checks.
-- Three collectible portfolio dossiers and a complete/failure/replay loop.
-- An exploration mode without enemy damage.
-- Touch movement and firing controls, drag-to-look, pause and opt-in synthesized sound.
-- Procedural concrete and metal materials, clouds, terrain, shadows and original models.
-
-## Controls
-
-| Action | Desktop |
-|---|---|
-| Move | WASD or arrows |
-| Look | Click scene to capture mouse, then move mouse |
-| Fire / aim | Left / right mouse button |
-| Reload | R |
-| Sprint | Left Shift |
-| Jump / parachute | Space |
-| Collect terminal dossier | E near a green beacon |
-| Pause / release mouse | Escape |
-
-Mobile uses the on-screen controls and scene drag gestures. Choose **Explore without combat** to visit the terminals at your own pace. All three dossiers complete the mission and return you to portfolio navigation.
-
-## Project structure
-
-- `main.js`: portfolio content, navigation, launch and UI handlers.
-- `game.js`: Three.js game scene, combat, movement, deployment and objectives.
-- `materials.js`: original generated surface textures, terrain and sky shader.
-- `style.css`, `index.html`: responsive interface and HUD.
-- `public/lobby.jpg`: original generated cinematic artwork.
-- `public/vendor/`: bundled Three.js r160 and its MIT license.
-- `server.mjs`: dependency-free local static server.
-- `game.test.mjs`: movement, reload and shot-occlusion regression tests.
-
-## Validation
+## Production
 
 ```sh
 npm run check
 npm test
+npm run build
+npm run preview
 ```
 
-Five automated tests cover cover collision, diagonal movement speed, reload conditions, paused firing, and shots blocked by cover versus exposed enemies. GitHub Actions runs the checks on pushes and pull requests.
+The allowlisted production output is in `dist/`. Upload that directory to a static host. All asset paths are relative, including support for hosting below a repository path. `npm run preview` serves `dist/` at the same local port; stop the development server first or choose another `PORT`. Open over HTTP(S), not `file://`.
 
-Manually checked in a browser: lobby rendering, aircraft-to-ground transition, firing/reloading, pause, failure screen, exploration mode, collection of all three dossiers, mission completion and project navigation. No console errors were reported during these checks. The portfolio had no horizontal overflow at a 390px viewport. Pointer-lock aiming, mobile hardware performance and full combat balancing need further testing across devices.
+The build has no server-side application, accounts, API keys, database, tracking or contact-form service. Preferences use browser local storage and continue to work in memory if storage is blocked. Google Fonts is optional; system fonts are available as a fallback.
 
-## Visual scope and remaining work
+## Included experience
 
-This is a working original single-level browser game portfolio, **not a finished AAA game or a recreation of Call of Duty**. The lobby's realistic operator is 2D artwork. Gameplay models are procedural and stylized. Photorealistic animated human operators, detailed imported aircraft/weapon models, multiplayer, vehicles and a full campaign are not implemented. The repository does not claim those features are complete.
+- Cinematic lobby, project briefings, education/bio, interests and contact links.
+- Original procedural 3D operator with equipment, fabric pattern, helmet, headset and vest.
+- Rotatable armory with a field terminal, archive case, comms radio and fictional training carbine; olive, sand and graphite finishes.
+- Equipment selection and finish saved on the device. The carbine is only used in optional training; other equipment is an inspection gallery.
+- Moving original transport aircraft, steerable freefall, manually deployed or automatic safety parachute, three collectible flight-intel chips and landing destinations that open portfolio sections.
+- Non-combat airfield exploration with three collectible portfolio dossiers and an ending/replay flow.
+- Optional drone training with six targets, aiming, firing, reload, health, cover collision and shot occlusion.
+- Tactical minimap, keyboard-look controls, mobile steering, drag-to-look, pause, skip and replay.
+- Dawn/overcast lighting presets for the same map, quality/sensitivity/audio settings.
+- Turn-based simplified drop for reduced motion and devices without WebGL. Also available explicitly from the briefing.
+- Original procedural geometry/materials and synthesized sound. No copied game assets, fake awards, currency, purchases or checkout.
 
-## Editing content
+## Controls
 
-Edit verified personal and project information in `main.js`. Alumini and FilePilot AI are marked in progress; unconfirmed dates, skills, demo URLs and performance metrics are omitted. Contact uses GitHub and LinkedIn rather than an unconfigured form.
+| Action | Desktop | Touch / alternative |
+|---|---|---|
+| Move / steer | WASD or arrow keys | Direction buttons |
+| Jump from aircraft / deploy chute | Space | Jump / Open parachute |
+| Look in airfield | Click scene to capture mouse | Drag the scene |
+| Look without mouse capture | J/L left/right, I/K up/down | Look buttons |
+| Sprint / ground jump | Left Shift / Space | Ground jump is keyboard-only |
+| Collect nearby dossier | E | Collect intel |
+| Pause / release mouse | Escape | Pause / Resume |
+| Fire (training only) | Left click or F | Fire |
+| Aim / reload (training only) | Right click / R | Reload; aiming is desktop-only |
+| Inspect model | Drag, or left/right arrows while canvas focused | Drag or rotate buttons |
+| Inspector zoom | + / − while canvas focused | Browser zoom remains available |
 
-## Asset provenance
+The simplified drop advances one turn per steering or Descend action. Space deploys; Escape pauses. It ends automatically on landing. Settings always respect the system reduced-motion preference. The normal drop takes roughly 15–22 seconds depending on when the canopy opens.
 
-Three.js is included under its MIT license, retained in `public/vendor/LICENSE`. All other scene geometry, materials and sound are generated by this project. The lobby image was generated for this portfolio. No official Call of Duty assets or branding are used; the project is not affiliated with Activision.
+## Edit content and assets
+
+- **`profile.js`**: personal information, projects, interests, confirmed skills and contribution links. Fill the empty `skills` list only with confirmed skills. Alumini details and any demo URLs still need confirmation; no placeholders are presented as working demos.
+- **`main.js`**: page composition, portfolio routing, launch flow and interface handlers.
+- **`models.js` / `inspector.js`**: original model factories and on-demand 3D inspection. To add licensed models later, load them here and retain the source/license attribution.
+- **`game.js` / `materials.js`**: 3D mission, environment, movement, terrain and game interaction.
+- **`drop.js` / `simple-drop.js`**: pure fallback game rules and accessible turn-based UI.
+- **`settings.js`**: validated local preferences.
+- **`public/lobby.jpg`**: generated cinematic lobby artwork; replace with your own image at the same path.
+- **`style.css` / `index.html`**: visual system, responsive layouts, settings dialog and game HUD.
+- **`build.mjs` / `server.mjs`**: allowlisted static packaging and local HTTP preview.
+
+## Verified content correction
+
+GitHub reports openSUSE/open-build-service **#20538 as closed, not merged**. The maintainer's closing comment points to #20621 as the separate solution. The portfolio describes the proposed fix and links to #20538 without claiming a merge or an award. Source: https://github.com/openSUSE/open-build-service/pull/20538#issuecomment-6800122585
+
+## Validation
+
+`npm run check` checks every authored JavaScript module. `npm test` runs 12 regression tests for movement collision/speed, reload guards, paused firing, shot occlusion, settings/storage failures, fallback pause/landing/canopy/intel rules, landing destinations, finite model geometry and local asset resolution. CI runs syntax checks, tests and the production build.
+
+Browser checks covered all eight navigation sections, persisted selection, model rotation, settings, the reduced-motion route, fallback intel/pause/resume/landing, aircraft insertion and its portfolio transition, and touch movement/dossier collection. All eight portfolio pages fit a 390px viewport without horizontal overflow. The original mission's completion, failure and reload flows were also exercised during development. See `QA.md` for the final validation record and remaining device checks.
+
+## Visual scope
+
+This is an original **single-level browser portfolio/game**, not Call of Duty or a AAA game. The realistic lobby operator is a **2D generated image**. The playable scene and inspector are actual 3D, with **procedural, stylized models**. Photorealistic character animation, motion capture, multiplayer, a full campaign, vehicles and commercial-game asset fidelity are not implemented or claimed. Achieving that visual target would require a separate licensed/custom asset and animation production effort.
+
+## Attribution
+
+Three.js r160: MIT, license in `public/vendor/LICENSE`. Scene geometry, texture patterns and synthesized audio are generated by this project's code. Lobby artwork was generated for the portfolio. No official Call of Duty logos, character models, maps, skins, audio or menus are included. This independent portfolio is not affiliated with Activision.

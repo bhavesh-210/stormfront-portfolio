@@ -1,9 +1,18 @@
 import * as T from './public/vendor/three.module.js';
 export const finishes = { olive: '#626c50', sand: '#a3906a', graphite: '#414b4c' };
+function fabricMap(finish) {
+  if(typeof document==='undefined'||!document.createElement)return null;
+  const canvas=document.createElement('canvas');canvas.width=canvas.height=256;const c=canvas.getContext('2d');
+  c.fillStyle=finishes[finish]||finishes.olive;c.fillRect(0,0,256,256);let seed=47;const random=()=>((seed=(seed*1664525+1013904223)>>>0)/4294967296);
+  for(let i=0;i<220;i++){c.fillStyle=i%3?'#19241e4a':'#c5bc922a';const x=random()*256,y=random()*256;c.beginPath();c.moveTo(x,y);for(let n=0;n<8;n++)c.lineTo(x+Math.cos(n*.8)*(8+random()*20),y+Math.sin(n*.8)*(7+random()*14));c.closePath();c.fill();}
+  for(let y=0;y<256;y+=2){c.fillStyle=y%4?'#ffffff08':'#00000013';c.fillRect(0,y,256,1);}for(let x=0;x<256;x+=2){c.fillStyle='#0000000b';c.fillRect(x,0,1,256);}
+  const texture=new T.CanvasTexture(canvas);texture.colorSpace=T.SRGBColorSpace;texture.wrapS=texture.wrapT=T.RepeatWrapping;return texture;
+}
 function parts(finish) {
   const group = new T.Group();
   const mat = (c, metal = 0) => new T.MeshStandardMaterial({ color: c, roughness: metal ? .38 : .86, metalness: metal });
   const cloth = mat(finishes[finish] || finishes.olive), dark = mat('#202b29'), metal = mat('#475251', .75), glass = mat('#5f8b87', .8), strap = mat('#a09a7c');
+  const fabric=fabricMap(finish);if(fabric){cloth.map=fabric;cloth.color.set('#c1c1b5');cloth.bumpMap=fabric;cloth.bumpScale=.006;}
   function add(geo, material, pos, scale) { const m = new T.Mesh(geo, material); m.position.set(...pos); if (scale) m.scale.set(...scale); m.castShadow = m.receiveShadow = true; group.add(m); return m; }
   const box = (size, pos, material = cloth) => add(new T.BoxGeometry(...size), material, pos);
   const sphere = (size, pos, material = cloth) => add(new T.SphereGeometry(1, 28, 20), material, pos, size);
@@ -72,4 +81,22 @@ export function gearModel(kind = 'scanner', finish = 'olive') {
   }
   return group;
 }
-export function disposeModel(group) { const geometries=new Set(), materials=new Set();group.traverse(o=>{if(o.geometry)geometries.add(o.geometry);if(o.material)for(const m of [o.material].flat())materials.add(m)});geometries.forEach(g=>g.dispose());materials.forEach(m=>m.dispose()); }
+export function disposeModel(group) { const geometries=new Set(), materials=new Set();group.traverse(o=>{if(o.geometry)geometries.add(o.geometry);if(o.material)for(const m of [o.material].flat())materials.add(m)});geometries.forEach(g=>g.dispose());materials.forEach(m=>{m.map?.dispose();m.dispose();}); }
+
+// Original transport silhouette with a tapered fuselage and swept wings.
+export function transportModel() {
+ const g=new T.Group(), paint=new T.MeshStandardMaterial({color:'#919b91',roughness:.65,metalness:.16}), dark=new T.MeshStandardMaterial({color:'#253538',roughness:.4,metalness:.25}), trim=new T.MeshStandardMaterial({color:'#55615b',roughness:.6});
+ const add=(geo,mat,pos)=>{const m=new T.Mesh(geo,mat);m.position.set(...pos);m.castShadow=m.receiveShadow=true;g.add(m);return m;};
+ const points=[[-10,0],[-9.6,.6],[-8.5,1.4],[-6.5,1.9],[3.8,1.9],[6,1.4],[8,.7],[10,.18],[10.2,0]].map(([z,r])=>new T.Vector2(r,z));
+ const body=add(new T.LatheGeometry(points,48),paint,[0,0,0]);body.rotation.x=Math.PI/2;
+ function wing(side,root,tip,front,back,y){const shape=new T.Shape();shape.moveTo(side*root,-front);shape.lineTo(side*tip,-front-3);shape.lineTo(side*(tip-.4),-back-2);shape.lineTo(side*root,-back);shape.closePath();const w=add(new T.ExtrudeGeometry(shape,{depth:.22,bevelEnabled:true,bevelSize:.08,bevelThickness:.08,bevelSegments:2,steps:1}),paint,[0,y,0]);w.rotation.x=-Math.PI/2;}
+ for(const side of [-1,1]){wing(side,1.2,12,-2,1.8,.6);wing(side,.2,4,7,8.6,1.1);
+  for(let i=0;i<8;i++)add(new T.BoxGeometry(.03,.32,.45),dark,[side*1.88,.6,-5+i*1.2]);
+  const window=add(new T.SphereGeometry(1,20,12),dark,[side*.85,1.05,-8.1]);window.scale.set(.7,.35,.55);
+  const light=add(new T.SphereGeometry(.12,10,8),new T.MeshBasicMaterial({color:side>0?'#91eab2':'#eb9678'}),[side*11.8,.8,2]);
+  for(const distance of [4.5,7.8]){const x=side*distance;const engine=add(new T.CylinderGeometry(.67,.73,3.1,32),paint,[x,-.4,-.3]);engine.rotation.x=Math.PI/2;const intake=add(new T.CircleGeometry(.6,32),dark,[x,-.4,-1.88]);intake.rotation.y=Math.PI;add(new T.TorusGeometry(.66,.06,10,32),trim,[x,-.4,-1.88]);for(let i=0;i<8;i++){const blade=add(new T.BoxGeometry(.05,.95,.03),trim,[x,-.4,-1.9]);blade.rotation.z=i*Math.PI/8;}}
+ }
+ const fin=new T.Shape();fin.moveTo(6,0);fin.lineTo(8.5,4.4);fin.lineTo(10,4.4);fin.lineTo(9.3,0);const tail=add(new T.ExtrudeGeometry(fin,{depth:.2,bevelEnabled:false}),paint,[-.1,.8,0]);tail.rotation.y=-Math.PI/2;
+ for(let i=0;i<8;i++){const seam=add(new T.TorusGeometry(1.91,.012,4,48),trim,[0,0,-5+i*1.2]);}
+ return g;
+}

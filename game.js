@@ -1,7 +1,7 @@
 import * as T from './public/vendor/three.module.js';
 import {surface,addSky,landscape} from './materials.js';
 import {nearestDestination} from './drop.js';
-import {finishes} from './models.js';
+import {finishes,transportModel} from './models.js';
 export class FieldGame {
   constructor(canvas, onExit) {
     this.canvas=canvas; this.onExit=onExit; this.keys={}; this.phase='lobby'; this.paused=false; this.sound=false; this.yaw=0; this.pitch=0; this.fireHeld=false; this.aim=false;
@@ -26,14 +26,7 @@ export class FieldGame {
     }
     for(let i=0;i<22;i++){const x=(i%2?1:-1)*(11+(i%4)*5),z=-55+Math.floor(i/2)*10;const crate=this.box(this.scene,[3,2,2.5],[x,1,z],i%3?'#4c5844':'#7d7050',true);for(let dx of [-1,1])this.box(this.scene,[.12,2.1,2.6],[x+dx,1,z],'#30392e')}
     for(let i=0;i<12;i++){let x=(i%2?1:-1)*62,z=-65+Math.floor(i/2)*25;this.cylinder(this.scene,.16,9,[x,4.5,z],'#444f47');this.box(this.scene,[1,.2,.8],[x,9,z],'#dce4ba')}
-    this.aircraft=new T.Group();this.scene.add(this.aircraft);const body=this.mesh(new T.SphereGeometry(1,32,20),this.metal,this.aircraft);body.scale.set(2,2,10);const wing=this.box(this.aircraft,[24,.35,3],[0,0,1],'#555f57');wing.rotation.z=.03;this.box(this.aircraft,[8,.2,2],[0,1,7],'#555f57');this.box(this.aircraft,[.2,4,3],[0,2,7],'#555f57');for(let x of [-7,-4,4,7]){let engine=this.cylinder(this.aircraft,.7,3,[x,-.5,-.5],'#3e4742');engine.rotation.x=Math.PI/2}
-    this.aircraft.position.set(0,115,0);
-    // Fuselage panels, cockpit glazing, engine lips and navigation lights.
-    for(const side of [-1,1]){for(let i=0;i<9;i++)this.box(this.aircraft,[.05,.38,.45],[side*1.82,.5,-5+i*1.2],'#182f33');
-      const glass=this.box(this.aircraft,[1.15,.6,.08],[side*.65,.9,-8.1],'#233c42');glass.rotation.y=side*-.2;
-      for(let i=0;i<6;i++)this.box(this.aircraft,[.03,.04,12],[side*(1+i*.12),-.9,0],'#899086');
-      this.mesh(new T.SphereGeometry(.12,12,8),new T.MeshBasicMaterial({color:side===1?'#87cfaa':'#dc815b'}),this.aircraft,[side*11.8,0,1]);}
-    for(const x of [-7,-4,4,7]){const lip=this.mesh(new T.TorusGeometry(.64,.07,10,28),this.material('#89958d',.8),this.aircraft,[x,-.5,-2]);const fan=this.mesh(new T.CircleGeometry(.52,20),this.material('#131c1a'),this.aircraft,[x,-.5,-2.03]);fan.rotation.y=Math.PI;}
+    this.aircraft=transportModel();this.scene.add(this.aircraft);this.aircraft.position.set(0,115,0);
     this.flightChips=[];for(const [x,y,z] of [[0,78,18],[-7,51,8],[4,25,-3]]){const group=new T.Group();group.position.set(x,y,z);this.scene.add(group);this.mesh(new T.TorusGeometry(2.3,.08,8,32),new T.MeshBasicMaterial({color:'#e9c774'}),group);this.mesh(new T.OctahedronGeometry(.6),this.material('#d8ed81',.7),group);this.flightChips.push({group,collected:false});}
     this.pads=[];for(const [name,x,z]of [['Missions',-12,-8],['Operator',13,12],['Comms',0,-45]]){const pad=this.mesh(new T.RingGeometry(4,4.3,48),new T.MeshBasicMaterial({color:'#d8ed81',side:T.DoubleSide}),this.scene,[x,.16,z]);pad.rotation.x=-Math.PI/2;this.pads.push(pad);}
 

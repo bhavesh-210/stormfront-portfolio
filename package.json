@@ -1,11 +1,13 @@
 {
-  "name": "field-notes-game",
-  "version": "0.3.0",
+  "name": "stormfront-portfolio",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "node server.mjs",
-    "check": "node --check main.js && node --check game.js && node --check materials.js && node --check server.mjs",
-    "test": "node --test game.test.mjs"
+    "check": "node check.mjs",
+    "test": "node --test game.test.mjs portfolio.test.mjs",
+    "build": "node build.mjs",
+    "preview": "node server.mjs --production"
   }
 }

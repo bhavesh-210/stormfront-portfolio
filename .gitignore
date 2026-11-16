@@ -6,3 +6,6 @@ node_modules/
 outputs/
 work/
 generated_images/
+
+dist/
+site-deploy/
