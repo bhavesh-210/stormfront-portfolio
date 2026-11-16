@@ -1,0 +1,8 @@
+node_modules/
+.DS_Store
+.env
+.env.*
+*.zip
+outputs/
+work/
+generated_images/

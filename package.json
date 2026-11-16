@@ -1,1 +1,11 @@
-{"name":"field-notes-game","version":"0.2.0","private":true,"type":"module","scripts":{"dev":"node server.mjs","check":"node --check main.js && node --check game.js && node --check server.mjs"}}
+{
+  "name": "field-notes-game",
+  "version": "0.3.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node server.mjs",
+    "check": "node --check main.js && node --check game.js && node --check materials.js && node --check server.mjs",
+    "test": "node --test game.test.mjs"
+  }
+}
